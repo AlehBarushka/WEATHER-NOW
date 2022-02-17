@@ -1,27 +1,48 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { API_KEY } from './api/constants';
+import { getWeather } from './api/openWeather';
 
 const App = () => {
-	// const url = API_KEY;
+	const [weatherData, setWeatherData] = useState({});
+	const [location, setLocation] = useState('');
+	console.log(weatherData);
+
+	const searchLocation = (event) => {
+		if (event.key === 'Enter') {
+			getWeather(location).then((res) => {
+				setWeatherData(res.data);
+			});
+			setLocation('');
+		}
+	};
 
 	return (
 		<div className='app'>
+			<div className='search'>
+				<input
+					value={location}
+					type='text'
+					onChange={(e) => setLocation(e.target.value)}
+					placeholder='Enter location'
+					onKeyPress={searchLocation}
+				/>
+			</div>
 			<div className='container'>
 				<div className='top'>
 					<div className='location'>
-						<p>Hrodna</p>
+						<p>{weatherData.name}</p>
 					</div>
 					<div className='temp'>
-						<h1>5C</h1>
+						{weatherData.main ? <h1>{weatherData.main.temp}°C</h1> : null}
 					</div>
 					<div className='description'>
-						<p>Clouds</p>
+						{weatherData.weather ? <p>{weatherData.weather[0].main}</p> : null}
 					</div>
 				</div>
 				<div className='bottom'>
 					<div className='feels'>
-						<p className='bold'>4C</p>
+						{weatherData.main ? (
+							<p className='bold'>{weatherData.main.feels_like}°C</p>
+						) : null}
 						<p>Feels like</p>
 					</div>
 					<div className='humidity'>
