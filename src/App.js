@@ -19,6 +19,7 @@ const App = () => {
 
 	useEffect(() => {
 		dispatch(getWeatherAction(city));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dispatch]);
 
 	const { weather, isLoading, error } = useSelector((state) => state);
