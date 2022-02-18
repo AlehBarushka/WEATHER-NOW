@@ -4,9 +4,10 @@ import { getWeather } from '../api/openWeather';
 //action
 export const getWeatherAction = createAsyncThunk(
 	'weather/fetch',
-	(payload, { rejectWithValue, getState, dispatch }) => {
+	async (payload, { rejectWithValue, getState, dispatch }) => {
 		try {
-			getWeather(payload);
+			const { data } = await getWeather(payload);
+			return data;
 		} catch (error) {
 			if (!error?.response) {
 				throw error;
@@ -23,17 +24,17 @@ const weatherSlice = createSlice({
 	extraReducers: (builder) => {
 		//pending
 		builder.addCase(getWeatherAction.pending, (state, action) => {
-			state.loading = true;
+			state.isLoading = true;
 		});
 		//fulfilled
 		builder.addCase(getWeatherAction.fulfilled, (state, action) => {
 			state.weather = action && action.payload;
-			state.loading = false;
+			state.isLoading = false;
 			state.error = undefined;
 		});
 		//rejected
 		builder.addCase(getWeatherAction.rejected, (state, action) => {
-			state.loading = false;
+			state.isLoading = false;
 			state.weather = undefined;
 			state.error = action && action.payload;
 		});
