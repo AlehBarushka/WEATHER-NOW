@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getWeatherAction } from './slices/weatherSlice';
+import {
+	getWeatherByCityAction,
+	getWeatherByCoordsAction,
+} from './slices/weatherSlice';
 
 import weatherSVG from './assets/weather.svg';
 import Preloader from './common/Preloader';
@@ -10,20 +13,34 @@ import WeatherInfo from './components/WeatherInfo';
 const App = () => {
 	const dispatch = useDispatch();
 	const { weather, isLoading, error } = useSelector((state) => state);
-	const [city, setCity] = useState('гродно');
+	const [city, setCity] = useState('');
+	const [currentCoords, setCurrentCoords] = useState({});
+
+	const getCurrentCoords = () => {
+		navigator.geolocation.getCurrentPosition(({ coords }) => {
+			setCurrentCoords(coords);
+		});
+	};
 
 	useEffect(() => {
-		dispatch(getWeatherAction(city));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [dispatch]);
+		getCurrentCoords();
+		if (currentCoords?.latitude && currentCoords?.longitude) {
+			dispatch(
+				getWeatherByCoordsAction({
+					latitude: currentCoords.latitude,
+					longitude: currentCoords.longitude,
+				})
+			);
+		}
+	}, [dispatch, currentCoords.latitude, currentCoords.longitude]);
 
 	const onChangeHandler = (e) => {
 		setCity(e.target.value);
 	};
 
-	const onClickHandler = useCallback(() => {
-		dispatch(getWeatherAction(city));
-	}, [city, dispatch]);
+	const onClickHandler = () => {
+		dispatch(getWeatherByCityAction(city));
+	};
 
 	return (
 		<div>
@@ -48,7 +65,7 @@ const App = () => {
 				</div>
 				{isLoading ? (
 					<Preloader />
-				) : error ? (
+				) : error || !weather ? (
 					<h1 className='text-red-400 text-xl text-center'>{error?.message}</h1>
 				) : (
 					<div className='max-w-6xl px-4 mx-auto'>
