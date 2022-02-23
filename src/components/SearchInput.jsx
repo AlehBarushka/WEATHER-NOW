@@ -1,10 +1,11 @@
 import React from 'react';
 
 const SearchInput = (props) => {
-	const { onChangeHandler, city, onClickHandler } = props;
+	const { onChangeHandler, city, onClickHandler, onKeyDownHandler } = props;
 	return (
 		<>
 			<input
+				onKeyDown={onKeyDownHandler}
 				onChange={onChangeHandler}
 				value={city}
 				placeholder='Search City'

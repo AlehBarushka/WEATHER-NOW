@@ -42,6 +42,13 @@ const App = () => {
 		dispatch(getWeatherByCityAction(city));
 	};
 
+	const onKeyDownHandler = (e) => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			dispatch(getWeatherByCityAction(city));
+		}
+	};
+
 	return (
 		<div>
 			<section className='relative bg-gray-900  min-h-screen'>
@@ -58,6 +65,7 @@ const App = () => {
 						Find out the current weather situation around the world
 					</p>
 					<SearchInput
+						onKeyDownHandler={onKeyDownHandler}
 						onChangeHandler={onChangeHandler}
 						onClickHandler={onClickHandler}
 						city={city}
